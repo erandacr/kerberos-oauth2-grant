@@ -106,6 +106,7 @@ public class KerberosGrant extends AbstractAuthorizationGrantHandler {
         // Kerberos Credentials
         String kerberosSPN = null;
         String kerberosPwd = null;
+        String userstoreDomains = null;
         FederatedAuthenticatorConfig kerberosFederatedConfig = null;
 
         /* Setting the tenant ID */
@@ -142,6 +143,8 @@ public class KerberosGrant extends AbstractAuthorizationGrantHandler {
                             kerberosSPN = property.getValue();
                         else if (KerberosGrantConstants.KERBEROS_IDP_SPNPASSWORD.equals(property.getName()))
                             kerberosPwd = property.getValue();
+                        else if (KerberosGrantConstants.USER_STORE_DOMAINS.equals(property.getName()))
+                            userstoreDomains = property.getValue();
                     }
 
                     if (StringUtils.isEmpty(kerberosSPN) || StringUtils.isEmpty(kerberosPwd)) {
@@ -190,6 +193,9 @@ public class KerberosGrant extends AbstractAuthorizationGrantHandler {
                         kerberosUsersId.length();
                 AuthenticatedUser kerberosUser = new AuthenticatedUser();
                 kerberosUser.setUserName(kerberosUsersId.substring(0, indexOfAt));
+                if(StringUtils.isNotEmpty(userstoreDomains)){
+                    kerberosUser.setUserStoreDomain(userstoreDomains);
+                }
                 kerberosUser
                         .setTenantDomain(oAuthTokenReqMessageContext.getOauth2AccessTokenReqDTO().getTenantDomain());
                 oAuthTokenReqMessageContext.setAuthorizedUser(kerberosUser);
